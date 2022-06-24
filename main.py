@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import datetime, date
 import pickle
 import re
-from clean_folder.сlean_folder import folder_for_scan
+#from clean_folder.сlean_folder import folder_for_scan
 
 
 class Field:
