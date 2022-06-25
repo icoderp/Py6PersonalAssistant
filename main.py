@@ -1,8 +1,12 @@
 from collections import UserDict
-from datetime import datetime, date
+from datetime import date
+import datetime
 import pickle
 import re
-#from clean_folder.сlean_folder import folder_for_scan
+
+# from clean_folder.сlean_folder import folder_for_scan
+
+N = 2
 
 
 class Field:
@@ -12,49 +16,65 @@ class Field:
     def __str__(self) -> str:
         return f'{self.value}'
 
+    def __eq__(self, other):
+        return self.value == other.value
+
 
 class Name(Field):
     pass
 
 
 class Birthday(Field):
-    def __init__(self, value) -> None:
-        super().__init__(value)
-        self.__value = None
-        self.value = value
+    def __str__(self):
+        if self.value is None:
+            return 'Unknown'
+        else:
+            return f'{self.value:%d %b %Y}'
 
     @property
-    def value(self) -> str:
+    def value(self):
         return self.__value
 
     @value.setter
-    def value(self, value) -> None:
-        if value:
+    def value(self, value: str):
+        if value is None:
+            self.__value = None
+        else:
             try:
-                datetime.strptime(value, "%d.%m.%Y")
+                self.__value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
             except ValueError:
-                raise ValueError("Incorrect data format, should be DD.MM.YYYY")
-        self.__value = value
+                try:
+                    self.__value = datetime.datetime.strptime(value, '%d.%m.%Y').date()
+                except ValueError:
+                    raise DateIsNotValid
 
 
 class Phone(Field):
-    def __init__(self, value) -> None:
-        super().__init__(value)
-        self.__value = None
-        self.value = value
-
     @property
-    def value(self) -> str:
+    def value(self):
         return self.__value
 
     @value.setter
-    def value(self, value) -> None:
-        if value.isdigit():
-            self.__value = value
+    def value(self, value: str):
+        def is_code_valid(phone_code: str):
+            if '06' in phone_code[:2] or '09' in phone_code[:2]:
+                return True
+            return False
+
+        valid_phone = None
+        phone_num = value.removeprefix('+')
+        if phone_num.isdigit():
+            if '0' in phone_num[0] and len(phone_num) == 10 and is_code_valid(phone_num[:3]):
+                valid_phone = '+38' + phone_num
+            if '380' in phone_num[:3] and len(phone_num) == 12 and is_code_valid(phone_num[2:5]):
+                valid_phone = '+' + phone_num
+        if valid_phone is None:
+            raise ValueError(f'Wrong type of {value}')
+        self.__value = valid_phone
 
 
 class Record:
-    def __init__(self, name: Name, phones=[], birthday: Birthday = None) -> None:
+    def __init__(self, name: Name, phones=[], birthday=None) -> None:
         self.name = name
         self.phone_list = phones
         self.birthday = birthday
@@ -69,9 +89,12 @@ class Record:
     def del_phone(self, phone: Phone) -> None:
         self.phone_list.remove(phone)
 
-    def edit_phone(self, phone: Phone, new_phone: Phone) -> None:
-        self.phone_list.remove(phone)
-        self.phone_list.append(new_phone)
+    def del_birthday(self, birthday: Birthday) -> None:
+        self.birthday = None
+
+    def edit_phone(self, phone_num: Phone, new_phone_num: Phone):
+        self.phone_list.remove(phone_num)
+        self.phone_list.append(new_phone_num)
 
     def days_to_birthday(self):
         if self.birthday:
@@ -94,19 +117,21 @@ class AddressBook(UserDict):
     def add_record(self, record: Record) -> None:
         self.data[record.name.value] = record
 
-    def iterator(self, n=2, days=0):
-        self.n = n
-        index = 1
-        print_block = '-' * 50 + '\n'
+    def iterator(self, func=None, days=0):
+        index, print_block = 1, '-' * 50 + '\n'
         for record in self.data.values():
-            if days == 0 or (record.birthday.value is not None and record.days_to_birthday(record.birthday) <= days):
+            if func is None or func(record):
                 print_block += str(record) + '\n'
-                if index < n:
+                if index < N:
                     index += 1
                 else:
                     yield print_block
                     index, print_block = 1, '-' * 50 + '\n'
         yield print_block
+
+
+class DateIsNotValid(Exception):
+    ...
 
 
 class InputError:
@@ -122,6 +147,8 @@ class InputError:
             return 'Error! User not found!'
         except ValueError:
             return 'Error! Phone number is incorrect!'
+        except DateIsNotValid:
+            return 'You cannot add an invalid date'
 
 
 def hello(*args):
@@ -147,6 +174,14 @@ def add(contacts, *args):
 
 
 @InputError
+def del_user(contacts, *args):
+    name = args[0]
+    del contacts[name]
+    writing_file(contacts)
+    return f'Deleted user {name}'
+
+
+@InputError
 def change(contacts, *args):
     name, old_phone, new_phone = args[0], args[1], args[2]
     contacts[name].edit_phone(Phone(old_phone), Phone(new_phone))
@@ -157,8 +192,7 @@ def change(contacts, *args):
 @InputError
 def phone(contacts, *args):
     name = args[0]
-    phone = contacts[name]
-    return f'{phone}'
+    return contacts[name]
 
 
 @InputError
@@ -183,6 +217,22 @@ def birthday(contacts, *args):
     if args:
         name = args[0]
         return f'{contacts[name].birthday}'
+
+
+@InputError
+def add_update_date(contacts, *args):
+    name, birthday = args[0], args[1]
+    contacts[name].birthday = Birthday(birthday)
+    writing_file(contacts)
+    return f'Birthday date {contacts[name].birthday} of {name} was added or changed'
+
+
+@InputError
+def del_birthday(contacts, *args):
+    name, birthday = args[0], args[1]
+    contacts[name].del_birthday(Birthday(birthday))
+    writing_file(contacts)
+    return f'Delete birthday from user {name}'
 
 
 def show_birthday_30_days(contacts, *args):
@@ -235,23 +285,24 @@ def writing_file(contacts):
 
 @InputError
 def find(contacts, *args):
-    args_str = ''
-    for i in args:
-        args_str += i + ' '
-    user_request = '[' + args_str.lower()[:-1] + ']{2,}'
-    reg_exp = fr'{user_request}'
-    result = f'List with matches:\n'
-    for value in contacts.values():
-        match = re.findall(reg_exp, str(value).lower())
-        if str(value).find(str(match)) and len(match):
-            result += f'{str(value)}'+'\n'
-    return result
+    def find_sub(record):
+        return subst.lower() in record.name.value.lower() or \
+               any(subst in phone.value for phone in record.phone_list) or \
+               (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y'))
+
+    subst = args[0]
+    res = f'List of users with \'{subst.lower()}\' in data:\n'
+    page = contacts.iterator(find_sub)
+    for el in page:
+        res += f'{el}'
+    return res
 
 
-COMMANDS = {hello: ['hello'], add: ['add '], change: ['change '], phone: ['phone '],
+COMMANDS = {hello: ['hello'], add: ['add '], del_user: ['delete user'], change: ['change '], phone: ['phone '],
             show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
-            del_phone: ['del '], birthday: ['birthday '], show_birthday_30_days: ['user birthday'],
-            helping: ['help', '?'], find: ['search']}
+            del_phone: ['del '], birthday: ['birthday '], add_update_date: ['update date'],
+            del_birthday: ['delete date '], show_birthday_30_days: ['user birthday'],
+            helping: ['help', '?'], find: ['search ']}
 
 
 def command_parser(user_command: str) -> (str, list):
