@@ -5,7 +5,7 @@ import pickle
 from note_directory.notes import add_note, find_note
 import re
 
-from clean_folder.сlean_folder import folder_for_scan
+#from clean_folder.сlean_folder import folder_for_scan
 
 N = 2
 
