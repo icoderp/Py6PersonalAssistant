@@ -8,10 +8,10 @@ def add_note(contacts, *args):
     формат запису: DD.MM.YYYY - HH,MM,SS | Note
     """
     note = ' '.join(args)
-    current_id = datetime.now()
-    crt = current_id.strftime("%d.%m.%Y - %H:%M:%S")
+    date_now = datetime.now()
+    str_date_now = date_now.strftime("%d.%m.%Y - %H:%M:%S")
     with open(f"{Path().cwd()}/note_directory/note.txt", "a+", encoding='utf-8') as file:
-        file.write(crt + " | " + note + "\n")
+        file.write(str_date_now + " | " + note + "\n")
     return "The note is added."
 
 
