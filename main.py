@@ -9,7 +9,6 @@ from clean_folder.сlean_folder import folder_for_scan
 
 N = 2
 
-
 class Field:
     def __init__(self, value) -> None:
         self.value = value
