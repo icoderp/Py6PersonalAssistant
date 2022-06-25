@@ -11,7 +11,7 @@ def add_note(contacts, *args):
     date_now = datetime.now()
     str_date_now = date_now.strftime("%d.%m.%Y - %H:%M:%S")
     with open(f"{Path().cwd()}/note_directory/note.txt", "a+", encoding='utf-8') as file:
-        file.write(str_date_now + " | " + note + "\n")
+        file.write(f'{str_date_now} | {note}\n')
     return "The note is added."
 
 
