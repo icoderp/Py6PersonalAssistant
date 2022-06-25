@@ -3,7 +3,7 @@ from datetime import datetime, date
 import pickle
 import re
 #from clean_folder.сlean_folder import folder_for_scan
-
+from note_directory.notes import add_note, find_note
 
 class Field:
     def __init__(self, value) -> None:
@@ -213,6 +213,8 @@ def helping(*args):
         birthday name -> show how many days to birthday of user;
         user birthday -> show users with birthday in 30 days;
         find -> show users with matches for you request
+        add note -> add a note
+        search note or find note -> Search by keyword in notes
         good bye or close or exit or . - exit the program"""
 
 
@@ -248,7 +250,8 @@ def find(contacts, *args):
     return result
 
 
-COMMANDS = {hello: ['hello'], add: ['add '], change: ['change '], phone: ['phone '],
+COMMANDS = {hello: ['hello'], add_note: ['add note '], find_note: ['search note', 'find note'],
+            add: ['add '], change: ['change '], phone: ['phone '],
             show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
             del_phone: ['del '], birthday: ['birthday '], show_birthday_30_days: ['user birthday'],
             helping: ['help', '?'], find: ['search']}
