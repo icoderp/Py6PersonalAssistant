@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import date
 import datetime
 import pickle
-from note_directory.notes import add_note, find_note
+from note_directory.notes import add_note, find_note, change_note, delete_note
 import re
 
 # from clean_folder.сlean_folder import folder_for_scan
@@ -371,7 +371,8 @@ def find(contacts, *args):
     return res
 
 
-COMMANDS = {hello: ['hello'], add_note: ['add note '], find_note: ['search note', 'find note'],
+COMMANDS = {hello: ['hello'], add_note: ['add note '], find_note: ['search note', 'find note'], change_note: ['change note'],
+            delete_note: ['del note'],
             add: ['add '], info: ['info'], del_user: ['delete user'], change: ['change phone '], phone: ['show phone'],
             del_phone: ['delete phone'], show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
             birthday: ['show birthday'], add_update_date: ['update birthday'],
