@@ -72,16 +72,30 @@ class Phone(Field):
             raise ValueError(f'Wrong type of {value}')
         self.__value = valid_phone
 
+class Email(Field):
+    @property
+    def value(self) -> str:
+        return self.__value
+
+    @value.setter
+    def value(self, value:str) -> None:
+        value_email = r"[A-Za-z]{1}[\w\.]+@[A-Za-z]+\.[A-Za-z]{2,}"
+        if re.match(value_email, value) is not None:  # по логіці це перевірка введеного value та регулярного виразу
+            self.__value = value  # якщо ок, то value=value
+        else:
+            raise ValueError("Incorrect email format, should be sssss@ssss.sss")
 
 class Record:
-    def __init__(self, name: Name, phones=[], birthday=None) -> None:
+    def __init__(self, name: Name, phones=[], birthday=None, emails=[]) -> None:
         self.name = name
         self.phone_list = phones
         self.birthday = birthday
+        self.email_list = emails
 
     def __str__(self) -> str:
         return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
-               f' - Birthday: {self.birthday} '
+               f' - Email: {", ".join([email.value for email in self.email_list])}'\
+               f' - Birthday: {self.birthday}'
 
     def add_phone(self, phone: Phone) -> None:
         self.phone_list.append(phone)
@@ -108,6 +122,9 @@ class Record:
         else:
             return 'Unknown birthday'
 
+    #додати email
+    def add_email(self, email: Email) -> None:
+        self.email_list.append(email)
 
 class AddressBook(UserDict):
     def __init__(self):
@@ -156,19 +173,23 @@ def hello(*args):
 
 
 @InputError
-def add(contacts, *args):
+def add(contacts, *args):  # тут теж треба дописати, але потрібна допомога
     name = Name(args[0])
     phone = Phone(args[1])
     try:
         birthday = Birthday(args[2])
     except IndexError:
         birthday = None
+    try:
+        email = Email(args[[3]])
+    except IndexError:
+        email = None
     if name.value in contacts:
         contacts[name.value].add_phone(phone)
         writing_file(contacts)
         return f'Add phone {phone} to user {name}'
     else:
-        contacts[name.value] = Record(name, [phone], birthday)
+        contacts[name.value] = Record(name, [phone], birthday, email)
         writing_file(contacts)
         return f'Add user {name} with phone number {phone}'
 
@@ -218,6 +239,10 @@ def birthday(contacts, *args):
         name = args[0]
         return f'{contacts[name].birthday}'
 
+def email(contacts, *args):
+    if args:
+        name = args[0]
+        return f'{contacts[name].email}'
 
 @InputError
 def add_update_date(contacts, *args):
