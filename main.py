@@ -5,9 +5,10 @@ import pickle
 from note_directory.notes import add_note, find_note
 import re
 
-#from clean_folder.сlean_folder import folder_for_scan
+# from clean_folder.сlean_folder import folder_for_scan
 
 N = 2
+
 
 class Field:
     def __init__(self, value) -> None:
@@ -41,12 +42,9 @@ class Birthday(Field):
             self.__value = None
         else:
             try:
-                self.__value = datetime.datetime.strptime(value, '%Y-%m-%d').date()
+                self.__value = datetime.datetime.strptime(value, '%d.%m.%Y').date()
             except ValueError:
-                try:
-                    self.__value = datetime.datetime.strptime(value, '%d.%m.%Y').date()
-                except ValueError:
-                    raise DateIsNotValid
+                raise DateError
 
 
 class Phone(Field):
@@ -72,29 +70,37 @@ class Phone(Field):
             raise ValueError(f'Wrong type of {value}')
         self.__value = valid_phone
 
+
 class Email(Field):
     @property
-    def value(self) -> str:
+    def value(self):
         return self.__value
 
     @value.setter
-    def value(self, value:str) -> None:
-        value_email = r"[A-Za-z]{1}[\w\.]+@[A-Za-z]+\.[A-Za-z]{2,}"
-        if re.match(value_email, value) is not None:  # по логіці це перевірка введеного value та регулярного виразу
-            self.__value = value  # якщо ок, то value=value
+    def value(self, value: str):
+        if value is None:
+            self.__value = None
         else:
-            raise ValueError("Incorrect email format, should be sssss@ssss.sss")
+            result = None
+            valid_emails = re.findall(r'\b[a-zA-Z][\w\.]+@[a-zA-Z]+\.[a-zA-Z]{2,}', value)
+            if valid_emails:
+                for i in valid_emails:
+                    result = i
+            if result is None:
+                raise ValueError(f"Wrong type of {value}")
+            self.__value = result
+
 
 class Record:
-    def __init__(self, name: Name, phones=[], birthday=None, emails=[]) -> None:
+    def __init__(self, name: Name, phones=[], birthday=None, email=None) -> None:
         self.name = name
         self.phone_list = phones
         self.birthday = birthday
-        self.email_list = emails
+        self.email = email
 
     def __str__(self) -> str:
         return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
-               f' - Email: {", ".join([email.value for email in self.email_list])}'\
+               f' - Email: {self.email}' \
                f' - Birthday: {self.birthday}'
 
     def add_phone(self, phone: Phone) -> None:
@@ -103,6 +109,9 @@ class Record:
     def del_phone(self, phone: Phone) -> None:
         self.phone_list.remove(phone)
 
+    def del_email(self, email: Email) -> None:
+        self.email = None
+
     def del_birthday(self, birthday: Birthday) -> None:
         self.birthday = None
 
@@ -110,21 +119,15 @@ class Record:
         self.phone_list.remove(phone_num)
         self.phone_list.append(new_phone_num)
 
-    def days_to_birthday(self):
-        if self.birthday:
-            start = date.today()
-            birthday_date = datetime.strptime(str(self.birthday), '%d.%m.%Y')
-            end = date(year=start.year, month=birthday_date.month, day=birthday_date.day)
-            count_days = (end - start).days
-            if count_days < 0:
-                count_days += 365
-            return count_days
-        else:
-            return 'Unknown birthday'
+    def days_to_birthday(self, birthday: Birthday):
+        if birthday.value is None:
+            return None
+        right_now = date.today()
+        birthday_day = date(right_now.year, birthday.value.month, birthday.value.day)
+        if birthday_day < right_now:
+            birthday_day = date(right_now.year + 1, birthday.value.month, birthday.value.day)
+        return (birthday_day - right_now).days
 
-    #додати email
-    def add_email(self, email: Email) -> None:
-        self.email_list.append(email)
 
 class AddressBook(UserDict):
     def __init__(self):
@@ -147,7 +150,7 @@ class AddressBook(UserDict):
         yield print_block
 
 
-class DateIsNotValid(Exception):
+class DateError(Exception):
     ...
 
 
@@ -163,8 +166,8 @@ class InputError:
         except KeyError:
             return 'Error! User not found!'
         except ValueError:
-            return 'Error! Phone number is incorrect!'
-        except DateIsNotValid:
+            return 'Error! Phone number or email is incorrect!'
+        except DateError:
             return 'You cannot add an invalid date'
 
 
@@ -173,22 +176,21 @@ def hello(*args):
 
 
 @InputError
-def add(contacts, *args):  # тут теж треба дописати, але потрібна допомога
+def add(contacts, *args):
     name = Name(args[0])
-    phone = Phone(args[1])
-    try:
-        birthday = Birthday(args[2])
-    except IndexError:
-        birthday = None
-    try:
-        email = Email(args[[3]])
-    except IndexError:
-        email = None
     if name.value in contacts:
+        phone = Phone(args[1])
         contacts[name.value].add_phone(phone)
         writing_file(contacts)
         return f'Add phone {phone} to user {name}'
     else:
+        phone = Phone(args[1])
+        birthday = None
+        email = None
+        if len(args) > 2:
+            birthday = Birthday(args[2])
+        if len(args) > 3:
+            email = Email(args[3])
         contacts[name.value] = Record(name, [phone], birthday, email)
         writing_file(contacts)
         return f'Add user {name} with phone number {phone}'
@@ -212,8 +214,19 @@ def change(contacts, *args):
 
 @InputError
 def phone(contacts, *args):
-    name = args[0]
-    return contacts[name]
+    if args:
+        name = args[0]
+        res = ''
+        for el in contacts[name].phone_list:
+            res += f'{el}\n'
+        return res
+
+
+@InputError
+def info(contacts, *args):
+    if args:
+        name = args[0]
+        return contacts[name]
 
 
 @InputError
@@ -234,15 +247,35 @@ def show_all(contacts, *args):
     return result
 
 
+@InputError
+def email(contacts, *args):
+    if args:
+        name = args[0]
+        return f'{contacts[name].email}'
+
+
+@InputError
+def add_email(contacts, *args):
+    name, email = args[0], args[1]
+    contacts[name].email = Email(email)
+    writing_file(contacts)
+    return f'Email {contacts[name].email} of {name} was added or changed'
+
+
+@InputError
+def del_email(contacts, *args):
+    name, email = args[0], args[1]
+    contacts[name].del_email(Email(email))
+    writing_file(contacts)
+    return f'Delete email {email} from user {name}'
+
+
+@InputError
 def birthday(contacts, *args):
     if args:
         name = args[0]
         return f'{contacts[name].birthday}'
 
-def email(contacts, *args):
-    if args:
-        name = args[0]
-        return f'{contacts[name].email}'
 
 @InputError
 def add_update_date(contacts, *args):
@@ -257,14 +290,18 @@ def del_birthday(contacts, *args):
     name, birthday = args[0], args[1]
     contacts[name].del_birthday(Birthday(birthday))
     writing_file(contacts)
-    return f'Delete birthday from user {name}'
+    return f'Delete birthday {birthday} from user {name}'
 
 
-def show_birthday_30_days(contacts, *args):
-    result = 'List of users with birthday in 30 days:'
-    for key in contacts:
-        if contacts[key].days_to_birthday() <= 30:
-            result += f'\n{contacts[key]}'
+def show_birthday_n_days(contacts, *args):
+    def func_days(record):
+        return record.birthday.value is not None and record.days_to_birthday(record.birthday) <= days
+
+    days = int(args[0])
+    result = f'List of users with birthday in {days} days:\n'
+    print_list = contacts.iterator(func_days)
+    for item in print_list:
+        result += f'{item}'
     return result
 
 
@@ -277,20 +314,28 @@ def unknown_command(*args):
 
 
 def helping(*args):
-    """Command format:
+    return """Command format:
         help or ? -> this help;
         hello -> greeting;
-        add name phone -> add user to directory;
-        change name old_phone new_phone -> change the user's phone number;
-        del name phone -> delete the user's phone number;
-        phone name -> show the user's phone number;
+        add (name) (phone) (birthday) (email) -> 1st use: add user to directory, 2nd use: add 1 more phone number;
+        info (name) -> all information about user;
+        delete user (name) -> delete user from address book;
+        change phone (name) (old_phone) (new_phone) -> change the user's phone number;
+        show phone (name) -> show all user`s phones;
+        delete phone (name) (phone) -> delete the user's phone number;
         show all -> show data of all users;
-        birthday name -> show how many days to birthday of user;
-        user birthday -> show users with birthday in 30 days;
-        find -> show users with matches for you request
-        add note -> add a note
-        search note or find note -> Search by keyword in notes
-        good bye or close or exit or . - exit the program"""
+        show birthday (name) -> show user`s birthday;
+        update birthday (name) (birthday) -> add/update user`s birthday;
+        delete birthday (name) (birthday) -> delete user`s birthday;
+        birthdays in (number) -> show users with birthday in number days;
+        show email (name) -> show user`s email;
+        update email (name) (email) -> add/update user`s email;
+        delete email (name) (email) -> delete user`s email;
+        search -> show users with matches for you request (WARNING! All user`s info should be filled,
+        'None' fields will cause error);
+        add note -> add a note;
+        search note or find note -> Search by keyword in notes;
+        goodbye or close or exit or . - exit the program"""
 
 
 file_name = 'AddressBook.bin'
@@ -315,7 +360,8 @@ def find(contacts, *args):
     def find_sub(record):
         return subst.lower() in record.name.value.lower() or \
                any(subst in phone.value for phone in record.phone_list) or \
-               (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y'))
+               (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
+               (record.email.value is not None and subst in record.email.value)
 
     subst = args[0]
     res = f'List of users with \'{subst.lower()}\' in data:\n'
@@ -326,11 +372,11 @@ def find(contacts, *args):
 
 
 COMMANDS = {hello: ['hello'], add_note: ['add note '], find_note: ['search note', 'find note'],
-            add: ['add '], del_user: ['delete user'], change: ['change '], phone: ['phone '],
-            show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
-            del_phone: ['del '], birthday: ['birthday '], add_update_date: ['update date'],
-            del_birthday: ['delete date '], show_birthday_30_days: ['user birthday'],
-            helping: ['help', '?'], find: ['search ']}
+            add: ['add '], info: ['info'], del_user: ['delete user'], change: ['change phone '], phone: ['show phone'],
+            del_phone: ['delete phone'], show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
+            birthday: ['show birthday'], add_update_date: ['update birthday'],
+            del_birthday: ['delete birthday'], show_birthday_n_days: ['birthdays in '], email: ['show email'],
+            add_email: ['update email'], del_email: ['delete email'], helping: ['help', '?'], find: ['search']}
 
 
 def command_parser(user_command: str) -> (str, list):
