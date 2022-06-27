@@ -12,6 +12,7 @@ def add_note(contacts, *args):
     str_date_now = date_now.strftime("%d.%m.%Y - %H:%M:%S")
     with open(f"{Path().cwd()}/note_directory/note.txt", "a+", encoding='utf-8') as file:
         file.write(f'{str_date_now} | {note}\n')
+
     return "The note is added."
 
 
@@ -91,7 +92,7 @@ def change_note(contacts, *args):
         args = args[3:]
         text = ' '.join(args)
     elif len(args) == 3:
-        datetime_line = f"{args[0]} {args[1]} {args[2]}"
+        datetime_line = args[0] + args[1] + args[2]
         text = ''
     else:
         datetime_line = ''
@@ -125,10 +126,11 @@ def change_note(contacts, *args):
                 file.writelines(lines)
                 
         except:
-            print("Notepad error, check it")
+            print("Notepad error, check it.")
 
     except:
         print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
+
     return result
 
 
@@ -163,8 +165,63 @@ def delete_note(contacts, *args):
                 file.writelines(lines)
 
         except:
-            print("Notepad error, check it")
+            print("Notepad error, check it.")
 
     except:
         print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
+
+    return result
+
+
+def tag_note(contacts, *args):
+    """
+    Додавання тега (#) до нотатки. Нотатка ідентифікується, по даті і часі,
+     який можна взнати при пошуку потрібної нотатки
+    Пошук по тегам проходить через функцію find_note
+    пр. find note #plan
+    Приклад додавання тегу: tag note 20.02.1991 - 14:28:06 #plan
+    """
+    # розбираємо аргументи в форматі: datetime_line: "%d.%m.%Y - %H:%M:%S" = '', text: str = ''
+    if len(args) >= 4:
+        datetime_line = f"{args[0]} {args[1]} {args[2]}"
+        tag = args[3]
+    elif len(args) == 3:
+        datetime_line = args[0] + args[1] + args[2]
+        tag = ''
+    else:
+        datetime_line = ''
+        tag = ''
+
+    result = "The hashtag is not acceptable."
+    try:
+        # перевірка, що ідентифікатор заданий у правильному форматі
+        date_str = datetime.strptime(datetime_line, "%d.%m.%Y - %H:%M:%S")
+        try:
+            with open(f"{Path().cwd()}/note_directory/note.txt", "r") as file:
+                lines = file.readlines()
+            for n in range(len(lines)):
+                date = lines[n][:21]  # ціла дата DD.MM.YYYY - hh.mm.ss
+                date_s = datetime.strptime(date, "%d.%m.%Y - %H:%M:%S")
+                if date_s == date_str:  # збіг дати і часу строки з заданою датою і часом
+                    if tag != '':
+                        new_line = f"{lines[n][:len(lines[n])-1]}  #{tag}\n"  # добавлення тегу в вибрану нотатку
+                        lines[n] = new_line
+                        result = "The hashtag is accepted."
+                        break
+                    else:
+                        user_answer = input("The tag is empty. Are you sure? y or n")
+                        if user_answer == 'y':
+                            new_line = f"{lines[n][:len(lines[n]) - 1]}  #{tag}\n"
+                            lines[n] = new_line
+                            result = "The hashtag is accepted."
+                        break
+            # видаляємо вміст старого файлу, пишемо змінений
+            with open(f"{Path().cwd()}/note_directory/note.txt", "w") as file:
+                file.writelines(lines)
+        except:
+            print("Notepad error, check it.")
+
+    except:
+        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
+
     return result
