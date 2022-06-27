@@ -2,7 +2,7 @@ from collections import UserDict
 from datetime import date
 import datetime
 import pickle
-from note_directory.notes import add_note, find_note
+from note_directory.notes import add_note, find_note, change_note, delete_note, tag_note
 import re
 
 # from clean_folder.сlean_folder import folder_for_scan
@@ -372,11 +372,13 @@ def find(contacts, *args):
 
 
 COMMANDS = {hello: ['hello'], add_note: ['add note '], find_note: ['search note', 'find note'],
-            add: ['add '], info: ['info'], del_user: ['delete user'], change: ['change phone '], phone: ['show phone'],
-            del_phone: ['delete phone'], show_all: ['show all'], exiting: ['good bye', 'close', 'exit', '.'],
-            birthday: ['show birthday'], add_update_date: ['update birthday'],
-            del_birthday: ['delete birthday'], show_birthday_n_days: ['birthdays in '], email: ['show email'],
-            add_email: ['update email'], del_email: ['delete email'], helping: ['help', '?'], find: ['search']}
+            change_note: ['change note'],delete_note: ['del note'], tag_note: ['tag note'],
+            add: ['add '], info: ['info'], del_user: ['delete user'], change: ['change phone '],
+            phone: ['show phone'],del_phone: ['delete phone'], show_all: ['show all'],
+            exiting: ['good bye', 'close', 'exit', '.'], birthday: ['show birthday'],
+            add_update_date: ['update birthday'], del_birthday: ['delete birthday'],
+            show_birthday_n_days: ['birthdays in '], email: ['show email'], add_email: ['update email'],
+            del_email: ['delete email'], helping: ['help', '?'], find: ['search']}
 
 
 def command_parser(user_command: str) -> (str, list):
