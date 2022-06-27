@@ -216,14 +216,14 @@ def tag_note(*args):
                 date_s = datetime.strptime(date, "%d.%m.%Y - %H:%M:%S")
                 if date_s == date_str:  # збіг дати і часу строки з заданою датою і часом
                     if tag != '':
-                        new_line = f"{lines[n][:len(lines[n])-1]}  #{tag}\n"  # добавлення тегу в вибрану нотатку
+                        new_line = f"{lines[n][:len(lines[n])-1]} {tag}\n"  # добавлення тегу в вибрану нотатку
                         lines[n] = new_line
                         result = "The hashtag is accepted."
                         break
                     else:
                         user_answer = input("The tag is empty. Are you sure? y or n")
                         if user_answer == 'y':
-                            new_line = f"{lines[n][:len(lines[n]) - 1]}  #{tag}\n"
+                            new_line = f"{lines[n][:len(lines[n]) - 1]} {tag}\n"
                             lines[n] = new_line
                             result = "The hashtag is accepted."
                         break
@@ -239,6 +239,18 @@ def tag_note(*args):
     return result
 
 
+def helping(*args):
+    return """Command format:
+        help or ? -> this help;
+        add note -> add a note;
+        search note or find note -> Search by keyword in notes;
+        change note -> Changes the note;
+        tag note -> adds a tag to a note;
+        del note -> deletes the note;  
+        show all -> show all notes;
+        goodbye or close or exit or . -> exit the notes"""
+
+
 def unknown_command(*args):
     return 'Unknown command! Enter again!'
 
@@ -247,9 +259,9 @@ def exiting(*args):
     return 'Good bye!'
 
 
-COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note'],
+COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note', 'show all'],
             change_note: ['change note'], delete_note: ['del note'], tag_note: ['tag note'],
-            exiting: ['good bye', 'close', 'exit', '.']}
+            exiting: ['good bye', 'close', 'exit', '.'], helping: ['help', '?']}
 
 
 def command_parser(user_command: str) -> (str, list):
