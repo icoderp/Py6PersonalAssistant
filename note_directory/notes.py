@@ -1,11 +1,20 @@
-import pickle
 from datetime import datetime
 from pathlib import Path
 
-from main import AddressBook
+
+def start_note():  # проверка что файл существует или его создание
+
+    try:
+        file = open(f"{Path().cwd()}/note.txt", 'r')
+        print("File note.txt with notes is loaded.")
+    except:
+        file = open(f"{Path().cwd()}/note.txt", 'w')
+        print("File note.txt with notes is created.")
+    finally:
+        file.close()
 
 
-def add_note(contacts, *args):
+def add_note(*args):
     """
     Зберігає нотатку за шляхом .\note_directory\note.txt в note.txt
     формат запису: DD.MM.YYYY - hh.mm.ss | Note
@@ -13,13 +22,13 @@ def add_note(contacts, *args):
     note = ' '.join(args)
     date_now = datetime.now()
     str_date_now = date_now.strftime("%d.%m.%Y - %H:%M:%S")
-    with open(f"{Path().cwd()}/note_directory/note.txt", "a+", encoding='utf-8') as file:
+    with open(f"{Path().cwd()}/note.txt", "a+", encoding='utf-8') as file:
         file.write(f'{str_date_now} | {note}\n')
 
     return "The note is added."
 
 
-def find_note(contacts, *args):
+def find_note(*args):
     """
     Пошук за ключовим словом у нотатках + між датами створення
     """
@@ -58,7 +67,7 @@ def find_note(contacts, *args):
         end_date = datetime.now()
 
 
-    with open(f"{Path().cwd()}/note_directory/note.txt", "r+", encoding='utf-8') as file:
+    with open(f"{Path().cwd()}/note.txt", "r+", encoding='utf-8') as file:
         lines = file.readlines()  # список усіх нотаток
 
     result = "No one note is found."
@@ -83,7 +92,7 @@ def find_note(contacts, *args):
     return result
 
 
-def change_note(contacts, *args):
+def change_note(*args):
     """
     Щоб змінити нотатку потрібно вказати дату і час її створення і вказати нову
     дату і час можна дізнатися за допомогою функції find_note
@@ -106,7 +115,7 @@ def change_note(contacts, *args):
         # перевірка, що ідентифікатор заданий у правильному форматі
         date_str = datetime.strptime(datetime_line, "%d.%m.%Y - %H:%M:%S")
         try:
-            with open(f"{Path().cwd()}/note_directory/note.txt", "r") as file:
+            with open(f"{Path().cwd()}/note.txt", "r") as file:
                 lines = file.readlines()
             for n in range(len(lines)):
                 date = lines[n][:21]  # ціла дата DD.MM.YYYY - hh.mm.ss
@@ -125,7 +134,7 @@ def change_note(contacts, *args):
                             result = "The note is changed"
                         break
             # видаляємо вміст старого файлу, пишемо змінений
-            with open(f"{Path().cwd()}/note_directory/note.txt", "w") as file:
+            with open(f"{Path().cwd()}/note.txt", "w") as file:
                 file.writelines(lines)
                 
         except:
@@ -137,7 +146,7 @@ def change_note(contacts, *args):
     return result
 
 
-def delete_note(contacts, *args):
+def delete_note(*args):
     """
     Щоб видалити нотатку потрібно вказати дату і час її створення
     дату і час можна дізнатися за допомогою функції find_note
@@ -154,7 +163,7 @@ def delete_note(contacts, *args):
         # перевірка, що ідентифікатор заданий у правильному форматі
         date_str = datetime.strptime(datetime_line, "%d.%m.%Y - %H:%M:%S")
         try:
-            with open(f"{Path().cwd()}/note_directory/note.txt", "r") as file:
+            with open(f"{Path().cwd()}/note.txt", "r") as file:
                 lines = file.readlines()
             for n in range(len(lines)):
                 date = lines[n][:21]  # ціла дата DD.MM.YYYY - hh.mm.ss
@@ -164,7 +173,7 @@ def delete_note(contacts, *args):
                     result = "The note is deleted"
                     break
             # видаляємо вміст старого файлу, пишемо змінений
-            with open(f"{Path().cwd()}/note_directory/note.txt", "w") as file:
+            with open(f"{Path().cwd()}/note.txt", "w") as file:
                 file.writelines(lines)
 
         except:
@@ -176,7 +185,7 @@ def delete_note(contacts, *args):
     return result
 
 
-def tag_note(contacts, *args):
+def tag_note(*args):
     """
     Додавання тега (#) до нотатки. Нотатка ідентифікується, по даті і часі,
      який можна взнати при пошуку потрібної нотатки
@@ -200,7 +209,7 @@ def tag_note(contacts, *args):
         # перевірка, що ідентифікатор заданий у правильному форматі
         date_str = datetime.strptime(datetime_line, "%d.%m.%Y - %H:%M:%S")
         try:
-            with open(f"{Path().cwd()}/note_directory/note.txt", "r") as file:
+            with open(f"{Path().cwd()}/note.txt", "r") as file:
                 lines = file.readlines()
             for n in range(len(lines)):
                 date = lines[n][:21]  # ціла дата DD.MM.YYYY - hh.mm.ss
@@ -219,7 +228,7 @@ def tag_note(contacts, *args):
                             result = "The hashtag is accepted."
                         break
             # видаляємо вміст старого файлу, пишемо змінений
-            with open(f"{Path().cwd()}/note_directory/note.txt", "w") as file:
+            with open(f"{Path().cwd()}/note.txt", "w") as file:
                 file.writelines(lines)
         except:
             print("Notepad error, check it.")
@@ -238,18 +247,6 @@ def exiting(*args):
     return 'Good bye!'
 
 
-file_name = 'AddressBook.bin'
-
-
-def reading_file(file_name):
-    with open(file_name, "rb") as file:
-        try:
-            unpacked = pickle.load(file)
-        except EOFError:
-            unpacked = AddressBook()
-        return unpacked
-
-
 COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note'],
             change_note: ['change note'], delete_note: ['del note'], tag_note: ['tag note'],
             exiting: ['good bye', 'close', 'exit', '.']}
@@ -266,11 +263,11 @@ def command_parser(user_command: str) -> (str, list):
 
 
 def main():
-    contacts = reading_file(file_name)
+    start_note()
     while True:
         user_command = input('Enter the command >>> ')
         command, data = command_parser(user_command)
-        print(command(contacts, *data))
+        print(command(*data))
         if command is exiting:
             break
 
