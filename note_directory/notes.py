@@ -1,5 +1,8 @@
+import pickle
 from datetime import datetime
 from pathlib import Path
+
+from main import AddressBook
 
 
 def add_note(contacts, *args):
@@ -225,3 +228,52 @@ def tag_note(contacts, *args):
         print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
 
     return result
+
+
+def unknown_command(*args):
+    return 'Unknown command! Enter again!'
+
+
+def exiting(*args):
+    return 'Good bye!'
+
+
+file_name = 'AddressBook.bin'
+
+
+def reading_file(file_name):
+    with open(file_name, "rb") as file:
+        try:
+            unpacked = pickle.load(file)
+        except EOFError:
+            unpacked = AddressBook()
+        return unpacked
+
+
+COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note'],
+            change_note: ['change note'], delete_note: ['del note'], tag_note: ['tag note'],
+            exiting: ['good bye', 'close', 'exit', '.']}
+
+
+def command_parser(user_command: str) -> (str, list):
+    for key, list_value in COMMANDS.items():
+        for value in list_value:
+            if user_command.lower().startswith(value):
+                args = user_command[len(value):].split()
+                return key, args
+    else:
+        return unknown_command, []
+
+
+def main():
+    contacts = reading_file(file_name)
+    while True:
+        user_command = input('Enter the command >>> ')
+        command, data = command_parser(user_command)
+        print(command(contacts, *data))
+        if command is exiting:
+            break
+
+
+if __name__ == '__main__':
+    main()
