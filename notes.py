@@ -282,7 +282,8 @@ def command_parser(user_command: str) -> (str, list):
         return unknown_command, []
 
 
-def main():
+def setup_notes():
+    print("You are in the notes now. Print 'help' or '?' to get some info about available commands")
     start_note()
     while True:
         user_command = input('Enter the command >>> ')
@@ -293,4 +294,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    setup_notes()
