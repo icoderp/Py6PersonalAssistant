@@ -4,8 +4,6 @@ import datetime
 import pickle
 import re
 
-# from clean_folder.сlean_folder import folder_for_scan
-
 N = 2
 
 
