@@ -240,15 +240,23 @@ def tag_note(*args):
 
 
 def helping(*args):
-    return """Command format:
+    return """
+        Command format:
         help or ? -> this help;
-        add note -> add a note;
-        search note or find note -> Search by keyword in notes;
-        change note -> Changes the note;
-        tag note -> adds a tag to a note;
-        del note -> deletes the note;  
-        show all -> show all notes;
-        goodbye or close or exit or . -> exit the notes"""
+        add note -> add a note 
+            | Ex. add note The weather is good today
+        search note or find note -> Search by keyword in notes 
+            | Ex. find note today 
+            | Ex. find note today 01.01.2022 07.01.2022 
+        change note -> Changes the note 
+            | Ex. change note 01.01.2022 Happy New Year
+        tag note -> adds a tag to a note
+            | Ex. tag note 01.01.2022 #happy
+        del note -> deletes the note
+            | Ex. del note 01.01.2022
+        show all -> show all notes
+        goodbye or close or exit or . -> exit the notes
+        """
 
 
 def unknown_command(*args):
