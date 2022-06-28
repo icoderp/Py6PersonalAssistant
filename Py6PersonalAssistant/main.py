@@ -1,5 +1,5 @@
 from Py6PersonalAssistant.addressbook import setup_abook
-from notes import setup_notes
+from Py6PersonalAssistant.notes import setup_notes
 
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
@@ -26,12 +26,12 @@ style = Style.from_dict({
 def main():
     while True:
         print("You are in the menu now. Available commands: 'addressbook', 'notebook', 'quit'")
-        user_command = str(prompt('Enter the command >>> ',
+        user_command = prompt('Enter the command >>> ',
                                   history=FileHistory('history'),
                                   auto_suggest=AutoSuggestFromHistory(),
                                   completer=SqlCompleter,
                                   style=style
-                                  )).split()
+                                  ).split()
         if user_command == "addressbook":
             setup_abook()
         if user_command == "notebook":
