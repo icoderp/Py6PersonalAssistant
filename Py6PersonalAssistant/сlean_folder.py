@@ -1,5 +1,5 @@
-from Py6PersonalAssistant.clean_folder_tools import file_parser as parser
-from Py6PersonalAssistant.clean_folder_tools.normalize import normalize
+from clean_folder_tools.file_parser import *
+from clean_folder_tools.normalize import normalize
 from pathlib import Path
 import shutil
 
@@ -64,57 +64,57 @@ def file_parser(*args):
     except IndexError:
         return "Please enter a folder name."
 
-    for file in parser.JPEG_IMAGES:
+    for file in JPEG_IMAGES:
         handle_media(file, Path(args[0]) / 'images' / 'JPEG')
-    for file in parser.JPG_IMAGES:
+    for file in JPG_IMAGES:
         handle_media(file, Path(args[0]) / 'images' / 'JPG')
-    for file in parser.PNG_IMAGES:
+    for file in PNG_IMAGES:
         handle_media(file, Path(args[0]) / 'images' / 'PNG')
-    for file in parser.SVG_IMAGES:
+    for file in SVG_IMAGES:
         handle_media(file, Path(args[0]) / 'images' / 'SVG')
 
-    for file in parser.AVI_VIDEO:
+    for file in AVI_VIDEO:
         handle_media(file, Path(args[0]) / 'video' / 'AVI')
-    for file in parser.MP4_VIDEO:
+    for file in MP4_VIDEO:
         handle_media(file, Path(args[0]) / 'video' / 'MP4')
-    for file in parser.MOV_VIDEO:
+    for file in MOV_VIDEO:
         handle_media(file, Path(args[0]) / 'video' / 'MOV')
-    for file in parser.MKV_VIDEO:
+    for file in MKV_VIDEO:
         handle_media(file, Path(args[0]) / 'video' / 'MKV')
 
-    for file in parser.DOC_DOCUMENTS:
+    for file in DOC_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'DOC')
-    for file in parser.DOCX_DOCUMENTS:
+    for file in DOCX_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'DOCX')
-    for file in parser.TXT_DOCUMENTS:
+    for file in TXT_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'TXT')
-    for file in parser.PDF_DOCUMENTS:
+    for file in PDF_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'PDF')
-    for file in parser.XLSX_DOCUMENTS:
+    for file in XLSX_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'XLSX')
-    for file in parser.PPTX_DOCUMENTS:
+    for file in PPTX_DOCUMENTS:
         handle_media(file, Path(args[0]) / 'documents' / 'PPTX')
 
-    for file in parser.MP3_AUDIO:
+    for file in MP3_AUDIO:
         handle_media(file, Path(args[0]) / 'audio' / 'MP3')
-    for file in parser.OGG_AUDIO:
+    for file in OGG_AUDIO:
         handle_media(file, Path(args[0]) / 'audio' / 'OGG')
-    for file in parser.WAV_AUDIO:
+    for file in WAV_AUDIO:
         handle_media(file, Path(args[0]) / 'audio' / 'WAV')
-    for file in parser.AMR_AUDIO:
+    for file in AMR_AUDIO:
         handle_media(file, Path(args[0]) / 'audio' / 'AMR')
 
-    for file in parser.ZIP_ARCHIVES:
+    for file in ZIP_ARCHIVES:
         handle_archive(file, Path(args[0]) / 'archives')
-    for file in parser.GZ_ARCHIVES:
+    for file in GZ_ARCHIVES:
         handle_archive(file, Path(args[0]) / 'archives')
-    for file in parser.TAR_ARCHIVES:
+    for file in TAR_ARCHIVES:
         handle_archive(file, Path(args[0]) / 'archives')
 
-    for file in parser.OTHER:
+    for file in OTHER:
         handle_other(file, Path(args[0]) / 'OTHER')
 
-    for folder in parser.FOLDERS[::-1]:
+    for folder in FOLDERS[::-1]:
         handle_folder(folder)
 
 
