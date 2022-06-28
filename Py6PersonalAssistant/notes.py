@@ -46,7 +46,7 @@ def add_note(*args):
     return "The note is added."
 
 
-def find_note(*args):
+def find_note(command, *args):
     """
     Пошук за ключовим словом у нотатках + між датами створення
     """
@@ -68,20 +68,25 @@ def find_note(*args):
         keyword = ''
         start = ''
         end = ''
-        print("Keyword not specified. The search will be performed by dates.")
+        if command == 'show all':
+            print('All notes')
+        else:
+            print("Keyword not specified. The search will be performed by dates.")
 
     # перевірка на коректність start date
     try:
         start_date = datetime.strptime(start, "%d.%m.%Y")
     except:
-        print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: 01.01.1970")
+        if command != 'show all':
+            print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: 01.01.1970")
         start_date = datetime.strptime("01.01.1970", "%d.%m.%Y")
 
     # перевірка на коректність end date
     try:
         end_date = datetime.strptime(end, "%d.%m.%Y")
     except:
-        print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
+        if command != 'show all':
+            print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
         end_date = datetime.now()
 
     with open(f"{Path().cwd()}/note.txt", "r+", encoding='utf-8') as file:
