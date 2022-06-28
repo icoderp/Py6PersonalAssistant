@@ -1,8 +1,8 @@
 from pathlib import Path
 import shutil
 import sys
-from clean_folder import file_parser as parser
-from clean_folder.normalize import normalize
+from Py6PersonalAssistant.clean_folder import file_parser as parser
+from Py6PersonalAssistant.clean_folder.normalize import normalize
 
 
 def handle_media(filename: Path, target_folder: Path):
