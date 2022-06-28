@@ -374,7 +374,7 @@ def helping(*args):
     return """Command format:
         help or ? -> this help;
         hello -> greeting;
-        add (name) (phone) (birthday) (email) -> 1st use: add user to directory, 2nd use: add 1 more phone number;
+        add (name) (phone) (birthday) (email) (address) -> 1st use: add user to directory, 2nd use: add 1 more phone number;
         info (name) -> all information about user;
         delete user (name) -> delete user from address book;
         change phone (name) (old_phone) (new_phone) -> change the user's phone number;
