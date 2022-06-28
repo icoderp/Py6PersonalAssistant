@@ -19,7 +19,8 @@ style = Style.from_dict({
     'scrollbar.button': 'bg:#222222',
 })
 
-def start_note(): # перевірка чи файл "note.txt" створений
+
+def start_note():  # перевірка чи файл "note.txt" створений
 
     try:
         file = open(f"{Path().cwd()}/note.txt", 'r')
@@ -83,7 +84,6 @@ def find_note(*args):
         print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
         end_date = datetime.now()
 
-
     with open(f"{Path().cwd()}/note.txt", "r+", encoding='utf-8') as file:
         lines = file.readlines()  # список усіх нотаток
 
@@ -99,11 +99,11 @@ def find_note(*args):
             # перевірка на keyword
             if (type(keyword) == str) and (keyword != ''):
                 if keyword in n.lower():
-                    print(n[:len(n)-1])
+                    print(n[:len(n) - 1])
                     result = "Notes are found."
             else:
                 # друкуємо всі строки
-                print(n[:len(n)-1])
+                print(n[:len(n) - 1])
                 result = "Notes are found."
 
     return result
@@ -153,7 +153,7 @@ def change_note(*args):
             # видаляємо вміст старого файлу, пишемо змінений
             with open(f"{Path().cwd()}/note.txt", "w") as file:
                 file.writelines(lines)
-                
+
         except:
             print("Notepad error, check it.")
 
@@ -233,7 +233,7 @@ def tag_note(*args):
                 date_s = datetime.strptime(date, "%d.%m.%Y - %H:%M:%S")
                 if date_s == date_str:  # збіг дати і часу строки з заданою датою і часом
                     if tag != '':
-                        new_line = f"{lines[n][:len(lines[n])-1]} {tag}\n"  # добавлення тегу в вибрану нотатку
+                        new_line = f"{lines[n][:len(lines[n]) - 1]} {tag}\n"  # добавлення тегу в вибрану нотатку
                         lines[n] = new_line
                         result = "The hashtag is accepted."
                         break
