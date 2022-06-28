@@ -24,7 +24,6 @@ style = Style.from_dict({
     'scrollbar.button': 'bg:#222222',
 })
 
-
 N = 2
 
 
@@ -73,7 +72,7 @@ class Phone(Field):
     @value.setter
     def value(self, value: str):
         def is_code_valid(phone_code: str):
-            if '06' in phone_code[:2] or '09' in phone_code[:2]:
+            if '06' in phone_code[:2] or '09' in phone_code[:2] or '05 ' in phone_code[:2]:
                 return True
             return False
 
@@ -109,17 +108,29 @@ class Email(Field):
             self.__value = result
 
 
+class Address(Field):
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value: str):
+        self.__value = value
+
+
 class Record:
-    def __init__(self, name: Name, phones=[], birthday=None, email=None) -> None:
+    def __init__(self, name: Name, phones=[], birthday=None, email=None, address=None) -> None:
         self.name = name
         self.phone_list = phones
         self.birthday = birthday
         self.email = email
+        self.address = address
 
     def __str__(self) -> str:
         return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
                f' - Email: {self.email}' \
-               f' - Birthday: {self.birthday}'
+               f' - Birthday: {self.birthday}' \
+               f' - Address: {self.address}'
 
     def add_phone(self, phone: Phone) -> None:
         self.phone_list.append(phone)
@@ -131,6 +142,9 @@ class Record:
         self.email = None
 
     def del_birthday(self, birthday: Birthday) -> None:
+        self.birthday = None
+
+    def del_address(self, address: Address) -> None:
         self.birthday = None
 
     def edit_phone(self, phone_num: Phone, new_phone_num: Phone):
@@ -205,13 +219,16 @@ def add(contacts, *args):
         phone = Phone(args[1])
         birthday = None
         email = None
+        address = None
         if len(args) > 2:
             birthday = Birthday(args[2])
         if len(args) > 3:
             email = Email(args[3])
-        contacts[name.value] = Record(name, [phone], birthday, email)
+        if len(args) > 4:
+            address = Address(args[4])
+        contacts[name.value] = Record(name, [phone], birthday, email, address)
         writing_file(contacts)
-        return f'Add user {name} with phone number {phone}'
+        return f'Add user {name} with phone number {phone}, birthday {birthday}, email {email}, address {address}'
 
 
 @InputError
@@ -323,6 +340,28 @@ def show_birthday_n_days(contacts, *args):
     return result
 
 
+@InputError
+def address(contacts, *args):
+    if args:
+        name = args[0]
+        return f'{contacts[name].address}'
+
+
+@InputError
+def add_address(contacts, *args):
+    name, address = args[0], " ".join(args[1:])
+    contacts[name].address = Address(address)
+    return f'Address {contacts[name].address} of {name} was added or changed'
+
+
+@InputError
+def del_address(contacts, *args):
+    name, address = args[0], args[1]
+    contacts[name].del_address(Address(address))
+    writing_file(contacts)
+    return f'Delete address {address} from user {name}'
+
+
 def exiting(*args):
     return 'Good bye!'
 
@@ -349,6 +388,9 @@ def helping(*args):
         show email (name) -> show user`s email;
         update email (name) (email) -> add/update user`s email;
         delete email (name) (email) -> delete user`s email;
+        show address (name) -> show user`s address;
+        update address (name) (address) -> add/update user`s address;
+        delete address (name) (address) -> delete user`s address;
         search -> show users with matches for you request (WARNING! All user`s info should be filled,
         'None' fields will cause error);
         goodbye or close or exit or . - exit the program"""
@@ -377,7 +419,8 @@ def find(contacts, *args):
         return subst.lower() in record.name.value.lower() or \
                any(subst in phone.value for phone in record.phone_list) or \
                (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
-               (record.email.value is not None and subst in record.email.value)
+               (record.email.value is not None and subst in record.email.value) or \
+               (record.address.value is not None and subst in record.address.value)
 
     subst = args[0]
     res = f'List of users with \'{subst.lower()}\' in data:\n'
@@ -392,7 +435,8 @@ COMMANDS = {hello: ['hello'], add: ['add '], info: ['info'], del_user: ['delete 
             exiting: ['good bye', 'close', 'exit', '.'], birthday: ['show birthday'],
             add_update_date: ['update birthday'], del_birthday: ['delete birthday'],
             show_birthday_n_days: ['birthdays in '], email: ['show email'], add_email: ['update email'],
-            del_email: ['delete email'], helping: ['help', '?'], find: ['search']}
+            del_email: ['delete email'], address: ['show address'], add_address: ['update address'],
+            del_address: ['delete address'], helping: ['help', '?'], find: ['search']}
 
 
 def command_parser(user_command: str) -> (str, list):

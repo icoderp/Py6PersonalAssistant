@@ -1,5 +1,6 @@
 from Py6PersonalAssistant.addressbook import setup_abook
 from Py6PersonalAssistant.notes import setup_notes
+from Py6PersonalAssistant.clean_folder import setup_cf
 
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
@@ -21,7 +22,7 @@ style = Style.from_dict({
 
 def main():
     while True:
-        print("You are in the menu now. Available commands: 'addressbook', 'notebook', 'quit'")
+        print("You are in the menu now. Available commands: 'addressbook', 'notebook', 'clean folder', 'quit'")
         user_command = prompt('Enter the command >>> ',
                                   history=FileHistory('history'),
                                   auto_suggest=AutoSuggestFromHistory(),
@@ -32,6 +33,8 @@ def main():
             setup_abook()
         if user_command == "notebook":
             setup_notes()
+        if user_command == "clean folder":
+            setup_cf()
         if user_command == "quit":
             print('Good bye!')
             break
