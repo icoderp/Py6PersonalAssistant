@@ -4,6 +4,27 @@ import datetime
 import pickle
 import re
 
+from prompt_toolkit import prompt
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles import Style
+
+SqlCompleter = WordCompleter([
+    'hello', 'add ', 'info', 'delete user', 'change phone ', 'show phone', 'delete phone',
+    'show all', 'good bye', 'close', 'exit', '.', 'show birthday', 'update birthday',
+    'delete birthday', 'birthdays in ', 'show email', 'update email', 'delete email',
+    'help', '?', 'search'], ignore_case=True)
+
+style = Style.from_dict({
+    'completion-menu.completion': 'bg:#008888 #ffffff',
+    'completion-menu.completion.current': 'bg:#00aaaa #000000',
+    'scrollbar.background': 'bg:#88aaaa',
+    'scrollbar.button': 'bg:#222222',
+})
+
+
 N = 2
 
 
@@ -388,7 +409,12 @@ def setup_abook():
     contacts = reading_file(file_name)
     print("You are in the addressbook now. Print 'help' or '?' to get some info about available commands")
     while True:
-        user_command = input('Enter the command >>> ')
+        user_command = prompt('Enter the command >>> ',
+                              history=FileHistory('history'),
+                              auto_suggest=AutoSuggestFromHistory(),
+                              completer=SqlCompleter,
+                              style=style
+                              )
         command, data = command_parser(user_command)
         print(command(contacts, *data))
         if command is exiting:

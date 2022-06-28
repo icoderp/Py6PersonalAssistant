@@ -1,6 +1,23 @@
 from datetime import datetime
 from pathlib import Path
 
+from prompt_toolkit import prompt
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles import Style
+
+SqlCompleter = WordCompleter([
+    'add note ', 'search note', 'find note', 'show all', 'change note',
+    'del note', 'tag note', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
+
+style = Style.from_dict({
+    'completion-menu.completion': 'bg:#008888 #ffffff',
+    'completion-menu.completion.current': 'bg:#00aaaa #000000',
+    'scrollbar.background': 'bg:#88aaaa',
+    'scrollbar.button': 'bg:#222222',
+})
 
 def start_note(): # перевірка чи файл "note.txt" створений
 
@@ -286,7 +303,12 @@ def setup_notes():
     print("You are in the notes now. Print 'help' or '?' to get some info about available commands")
     start_note()
     while True:
-        user_command = input('Enter the command >>> ')
+        user_command = prompt('Enter the command >>> ',
+                              history=FileHistory('history'),
+                              auto_suggest=AutoSuggestFromHistory(),
+                              completer=SqlCompleter,
+                              style=style
+                              )
         command, data = command_parser(user_command)
         print(command(*data))
         if command is exiting:

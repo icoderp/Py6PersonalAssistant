@@ -9,11 +9,7 @@ from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
-    'addressbook', 'notebook', 'quit', 'hello', 'add ', 'info', 'delete user',
-    'change phone ', 'show phone', 'delete phone', 'show all', 'good bye', 'close',
-    'exit', '.', 'show birthday', 'update birthday', 'delete birthday', 'birthdays in ',
-    'show email', 'update email', 'delete email', 'help', '?', 'search', 'add note ',
-    'search note', 'find note', 'show all', 'change note', 'del note', 'tag note'], ignore_case=True)
+    'addressbook', 'notebook', 'quit'], ignore_case=True)
 
 style = Style.from_dict({
     'completion-menu.completion': 'bg:#008888 #ffffff',
