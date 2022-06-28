@@ -1,5 +1,5 @@
-from clean_folder_tools.file_parser import *
-from clean_folder_tools.normalize import normalize
+from Py6PersonalAssistant.clean_folder_tools.file_parser import *
+from Py6PersonalAssistant.clean_folder_tools.normalize import normalize
 from pathlib import Path
 import shutil
 
