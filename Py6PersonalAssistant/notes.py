@@ -1,8 +1,26 @@
 from datetime import datetime
 from pathlib import Path
 
+from prompt_toolkit import prompt
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.lexers import PygmentsLexer
+from prompt_toolkit.styles import Style
 
-def start_note(): # перевірка чи файл "note.txt" створений
+SqlCompleter = WordCompleter([
+    'add note ', 'search note', 'find note', 'show all', 'change note',
+    'del note', 'tag note', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
+
+style = Style.from_dict({
+    'completion-menu.completion': 'bg:#008888 #ffffff',
+    'completion-menu.completion.current': 'bg:#00aaaa #000000',
+    'scrollbar.background': 'bg:#88aaaa',
+    'scrollbar.button': 'bg:#222222',
+})
+
+
+def start_note():  # перевірка чи файл "note.txt" створений
 
     try:
         file = open(f"{Path().cwd()}/note.txt", 'r')
@@ -66,7 +84,6 @@ def find_note(*args):
         print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
         end_date = datetime.now()
 
-
     with open(f"{Path().cwd()}/note.txt", "r+", encoding='utf-8') as file:
         lines = file.readlines()  # список усіх нотаток
 
@@ -82,11 +99,11 @@ def find_note(*args):
             # перевірка на keyword
             if (type(keyword) == str) and (keyword != ''):
                 if keyword in n.lower():
-                    print(n[:len(n)-1])
+                    print(n[:len(n) - 1])
                     result = "Notes are found."
             else:
                 # друкуємо всі строки
-                print(n[:len(n)-1])
+                print(n[:len(n) - 1])
                 result = "Notes are found."
 
     return result
@@ -136,7 +153,7 @@ def change_note(*args):
             # видаляємо вміст старого файлу, пишемо змінений
             with open(f"{Path().cwd()}/note.txt", "w") as file:
                 file.writelines(lines)
-                
+
         except:
             print("Notepad error, check it.")
 
@@ -216,7 +233,7 @@ def tag_note(*args):
                 date_s = datetime.strptime(date, "%d.%m.%Y - %H:%M:%S")
                 if date_s == date_str:  # збіг дати і часу строки з заданою датою і часом
                     if tag != '':
-                        new_line = f"{lines[n][:len(lines[n])-1]} {tag}\n"  # добавлення тегу в вибрану нотатку
+                        new_line = f"{lines[n][:len(lines[n]) - 1]} {tag}\n"  # добавлення тегу в вибрану нотатку
                         lines[n] = new_line
                         result = "The hashtag is accepted."
                         break
@@ -286,7 +303,12 @@ def setup_notes():
     print("You are in the notes now. Print 'help' or '?' to get some info about available commands")
     start_note()
     while True:
-        user_command = input('Enter the command >>> ')
+        user_command = prompt('Enter the command >>> ',
+                              history=FileHistory('history'),
+                              auto_suggest=AutoSuggestFromHistory(),
+                              completer=SqlCompleter,
+                              style=style
+                              )
         command, data = command_parser(user_command)
         print(command(*data))
         if command is exiting:
