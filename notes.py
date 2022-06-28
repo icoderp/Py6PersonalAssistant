@@ -2,7 +2,7 @@ from datetime import datetime
 from pathlib import Path
 
 
-def start_note():  # проверка что файл существует или его создание
+def start_note(): # перевірка чи файл "note.txt" створений
 
     try:
         file = open(f"{Path().cwd()}/note.txt", 'r')
@@ -251,9 +251,9 @@ def helping(*args):
         change note -> Changes the note 
             | Ex. change note 01.01.2022 Happy New Year
         tag note -> adds a tag to a note
-            | Ex. tag note 01.01.2022 #happy
+            | Ex. tag note 01.01.2022 - 00:11:34 #happy
         del note -> deletes the note
-            | Ex. del note 01.01.2022
+            | Ex. del note 01.01.2022 - 00:11:34
         show all -> show all notes
         goodbye or close or exit or . -> exit the notes
         """
