@@ -31,7 +31,7 @@ def main():
                                   auto_suggest=AutoSuggestFromHistory(),
                                   completer=SqlCompleter,
                                   style=style
-                                  ).split()
+                                  )
         if user_command == "addressbook":
             setup_abook()
         if user_command == "notebook":
