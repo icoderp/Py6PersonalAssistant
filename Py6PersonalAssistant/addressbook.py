@@ -145,7 +145,7 @@ class Record:
         self.birthday = None
 
     def del_address(self, address: Address) -> None:
-        self.birthday = None
+        self.address = None
 
     def edit_phone(self, phone_num: Phone, new_phone_num: Phone):
         self.phone_list.remove(phone_num)
@@ -225,7 +225,7 @@ def add(contacts, *args):
         if len(args) > 3:
             email = Email(args[3])
         if len(args) > 4:
-            address = Address(args[4])
+            address = Address(" ".join(args[4:]))
         contacts[name.value] = Record(name, [phone], birthday, email, address)
         writing_file(contacts)
         return f'Add user {name} with phone number {phone}, birthday {birthday}, email {email}, address {address}'
@@ -351,12 +351,13 @@ def address(contacts, *args):
 def add_address(contacts, *args):
     name, address = args[0], " ".join(args[1:])
     contacts[name].address = Address(address)
+    writing_file(contacts)
     return f'Address {contacts[name].address} of {name} was added or changed'
 
 
 @InputError
 def del_address(contacts, *args):
-    name, address = args[0], args[1]
+    name, address = args[0], " ".join(args[1:])
     contacts[name].del_address(Address(address))
     writing_file(contacts)
     return f'Delete address {address} from user {name}'
