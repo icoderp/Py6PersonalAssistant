@@ -397,7 +397,7 @@ def helping(*args):
         goodbye or close or exit or . - exit the program"""
 
 
-file_name = '../AddressBook.bin'
+file_name = 'AddressBook.bin'
 
 
 def reading_file(file_name):
