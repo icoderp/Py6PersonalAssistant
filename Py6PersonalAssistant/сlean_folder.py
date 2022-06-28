@@ -117,6 +117,8 @@ def file_parser(*args):
     for folder in FOLDERS[::-1]:
         handle_folder(folder)
 
+    return f'Files in {args[0]} was sorted.'
+
 
 def exiting(*args):
     return 'Good bye!'
