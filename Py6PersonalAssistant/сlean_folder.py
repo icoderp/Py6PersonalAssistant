@@ -42,7 +42,7 @@ def handle_archive(filename: Path, target_folder: Path):
         shutil.unpack_archive(str(filename.resolve()),
                               str(folder_for_file.resolve()))
     except shutil.ReadError:
-        print(f'Обман - это не архив {filename}!')
+        print(f'Wrong - it`s not an archive {filename}!')
         folder_for_file.rmdir()
         return None
     filename.unlink()
@@ -52,7 +52,7 @@ def handle_folder(folder: Path):
     try:
         folder.rmdir()
     except OSError:
-        print(f'Не удалось удалить папку {folder}')
+        print(f'Not able to delete {folder}')
 
 
 def file_parser(*args):
@@ -60,9 +60,9 @@ def file_parser(*args):
         folder_for_scan = Path(args[0])
         scan(folder_for_scan.resolve())
     except FileNotFoundError:
-        return f"Not able to find '{args[0]}' folder. Please enter a correct folder name."
+        return f"There isn`t '{args[0]}' folder. Try again."
     except IndexError:
-        return "Please enter a folder name."
+        return "Please enter a folder name you want to sort."
 
     for file in JPEG_IMAGES:
         handle_media(file, Path(args[0]) / 'images' / 'JPEG')
