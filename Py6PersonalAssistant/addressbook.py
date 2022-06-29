@@ -127,10 +127,16 @@ class Record:
         self.address = address
 
     def __str__(self) -> str:
-        return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
-               f' - Email: {self.email}' \
-               f' - Birthday: {self.birthday}' \
-               f' - Address: {self.address}'
+        return f'\n|{"-" * 90}|\n' \
+               f'| User {self.name!s:<42} Birthday: {self.birthday!s:<15} \n' \
+               f'| Email: {self.email!s:<40} Phones: {", ".join([phone.value for phone in self.phone_list])!s:<40} \n' \
+               f'| Address: {self.address!s:<60} '\
+               f'\n|{"-" * 90}|\n'
+    # def __str__(self) -> str:
+    #     return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
+    #            f' - Email: {self.email}' \
+    #            f' - Birthday: {self.birthday}' \
+    #            f' - Address: {self.address}'
 
     def add_phone(self, phone: Phone) -> None:
         self.phone_list.append(phone)
@@ -170,15 +176,15 @@ class AddressBook(UserDict):
         self.data[record.name.value] = record
 
     def iterator(self, func=None, days=0):
-        index, print_block = 1, '-' * 50 + '\n'
+        index, print_block = 1, '' #'-' * 50 + '\n'
         for record in self.data.values():
             if func is None or func(record):
-                print_block += str(record) + '\n'
+                print_block += str(record) #+ '\n'
                 if index < N:
                     index += 1
                 else:
                     yield print_block
-                    index, print_block = 1, '-' * 50 + '\n'
+                    index, print_block = 1, '' # '-' * 50 + '\n'
         yield print_block
 
 
