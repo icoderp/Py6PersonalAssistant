@@ -9,8 +9,8 @@ from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
-    'add note ', 'search note', 'find note', 'show all', 'change note',
-    'del note', 'tag note', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
+    'add ', 'search ', 'find ', 'show all', 'change ',
+    'del ', 'tag ', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
 
 style = Style.from_dict({
     'completion-menu.completion': 'bg:#008888 #ffffff',
@@ -265,16 +265,16 @@ def helping(*args):
     return """
         Command format:
         help or ? -> this help;
-        add note -> add a note 
+        add -> add a note 
             | Ex. add note The weather is good today
-        search note or find note -> Search by keyword in notes 
+        search or find -> Search by keyword in notes 
             | Ex. find note today 
             | Ex. find note today 01.01.2022 07.01.2022 
-        change note -> Changes the note 
+        change -> Changes the note 
             | Ex. change note 01.01.2022 Happy New Year
-        tag note -> adds a tag to a note
+        tag -> adds a tag to a note
             | Ex. tag note 01.01.2022 - 00:11:34 #happy
-        del note -> deletes the note
+        del -> deletes the note
             | Ex. del note 01.01.2022 - 00:11:34
         show all -> show all notes
         goodbye or close or exit or . -> exit the notes
