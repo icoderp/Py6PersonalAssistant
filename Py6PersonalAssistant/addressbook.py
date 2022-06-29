@@ -140,13 +140,13 @@ class Record:
         self.phone_list.remove(phone)
 
     def del_email(self, email: Email) -> None:
-        self.email = None
+        self.email = '-'
 
     def del_birthday(self, birthday: Birthday) -> None:
-        self.birthday = None
+        self.birthday = '-'
 
     def del_address(self, address: Address) -> None:
-        self.address = None
+        self.address = '-'
 
     def edit_phone(self, phone_num: Phone, new_phone_num: Phone):
         self.phone_list.remove(phone_num)
@@ -218,9 +218,9 @@ def add(contacts, *args):
         return f'Add phone {phone} to user {name}'
     else:
         phone = Phone(args[1])
-        birthday = None
-        email = None
-        address = None
+        birthday = '-'
+        email = '-'
+        address = '-'
         if len(args) > 2:
             birthday = Birthday(args[2])
         if len(args) > 3:
@@ -418,11 +418,14 @@ def writing_file(contacts):
 @InputError
 def find(contacts, *args):
     def find_sub(record):
-        return subst.lower() in record.name.value.lower() or \
-               any(subst in phone.value for phone in record.phone_list) or \
-               (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
-               (record.email.value is not None and subst in record.email.value) or \
-               (record.address.value is not None and subst in record.address.value)
+        try:
+            return subst.lower() in record.name.value.lower() or \
+                   any(subst in phone.value for phone in record.phone_list) or \
+                   (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
+                   (record.email.value is not None and subst in record.email.value) or \
+                   (record.address.value is not None and subst in record.address.value)
+        except AttributeError:
+            return False
 
     subst = args[0]
     res = f'List of users with \'{subst.lower()}\' in data:\n'
