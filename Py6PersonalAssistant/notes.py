@@ -165,7 +165,7 @@ def change_note(*args):
             print("Notepad error, check it.")
 
     except:
-        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and Py6PersonalAssistant from the search results.")
+        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
 
     return result
 
@@ -204,7 +204,7 @@ def delete_note(*args):
             print("Notepad error, check it.")
 
     except:
-        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and Py6PersonalAssistant from the search results.")
+        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
 
     return result
 
@@ -258,7 +258,7 @@ def tag_note(*args):
             print("Notepad error, check it.")
 
     except:
-        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and Py6PersonalAssistant from the search results.")
+        print("Incorrect format: DD.MM.YYYY - hh.mm.ss. Copy the date and time from the search results.")
 
     return result
 

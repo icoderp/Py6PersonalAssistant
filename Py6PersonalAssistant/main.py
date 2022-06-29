@@ -1,6 +1,6 @@
-from time.Py6PersonalAssistant.addressbook import setup_abook
-from time.Py6PersonalAssistant.notes import setup_notes
-from time.Py6PersonalAssistant.сlean_folder import setup_cf
+from Py6PersonalAssistant.addressbook import setup_abook
+from Py6PersonalAssistant.notes import setup_notes
+from Py6PersonalAssistant.сlean_folder import setup_cf
 
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
