@@ -5,7 +5,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
@@ -18,6 +17,9 @@ style = Style.from_dict({
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
+
+
+to_check = 'show all'
 
 
 def start_note():  # перевірка чи файл "note.txt" створений
@@ -46,7 +48,7 @@ def add_note(*args):
     return "The note is added."
 
 
-def find_note(command, *args):
+def find_note(*args):
     """
     Пошук за ключовим словом у нотатках + між датами створення
     """
@@ -68,7 +70,7 @@ def find_note(command, *args):
         keyword = ''
         start = ''
         end = ''
-        if command == 'show all':
+        if to_check == 'show all':
             print('All notes')
         else:
             print("Keyword not specified. The search will be performed by dates.")
@@ -77,7 +79,7 @@ def find_note(command, *args):
     try:
         start_date = datetime.strptime(start, "%d.%m.%Y")
     except:
-        if command != 'show all':
+        if to_check != 'show all':
             print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: 01.01.1970")
         start_date = datetime.strptime("01.01.1970", "%d.%m.%Y")
 
@@ -85,7 +87,7 @@ def find_note(command, *args):
     try:
         end_date = datetime.strptime(end, "%d.%m.%Y")
     except:
-        if command != 'show all':
+        if to_check != 'show all':
             print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
         end_date = datetime.now()
 
@@ -100,7 +102,7 @@ def find_note(command, *args):
         date = n[:10]  # вирізаємо дату створення нотатки
         date_time = datetime.strptime(date, "%d.%m.%Y")
 
-        if date_time >= start_date and date_time <= end_date:
+        if (date_time >= start_date) and (date_time <= end_date):
             # перевірка на keyword
             if (type(keyword) == str) and (keyword != ''):
                 if keyword in n.lower():
@@ -266,16 +268,16 @@ def helping(*args):
         Command format:
         help or ? -> this help;
         add -> add a note 
-            | Ex. add note The weather is good today
+            | Ex. add The weather is good today
         search or find -> Search by keyword in notes 
-            | Ex. find note today 
-            | Ex. find note today 01.01.2022 07.01.2022 
+            | Ex. find today 
+            | Ex. find today 01.01.2022 07.01.2022 
         change -> Changes the note 
-            | Ex. change note 01.01.2022 Happy New Year
+            | Ex. change 01.01.2022 Happy New Year
         tag -> adds a tag to a note
-            | Ex. tag note 01.01.2022 - 00:11:34 #happy
+            | Ex. tag 01.01.2022 - 00:11:34 #happy
         del -> deletes the note
-            | Ex. del note 01.01.2022 - 00:11:34
+            | Ex. del 01.01.2022 - 00:11:34
         show all -> show all notes
         goodbye or close or exit or . -> exit the notes
         """
@@ -289,8 +291,8 @@ def exiting(*args):
     return 'Good bye!'
 
 
-COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note', 'show all'],
-            change_note: ['change note'], delete_note: ['del note'], tag_note: ['tag note'],
+COMMANDS = {add_note: ['add '], find_note: ['search ', 'find ', 'show all'],
+            change_note: ['change '], delete_note: ['del '], tag_note: ['tag '],
             exiting: ['good bye', 'close', 'exit', '.'], helping: ['help', '?']}
 
 

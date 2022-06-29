@@ -8,7 +8,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
