@@ -27,7 +27,7 @@ In the NOTEBOOK mode, user of the 'Personal Assistant' can do the following.
 Note ID is its 'DATE - TIME' stamp. You can see it using 'find' command and then copy
 and paste for such commands as 'change', 'del' or 'tag'.
 
-In the CLEANER FOLDER mode, user can use the only command 'clean FOLDER'.
+In the CLEANER FOLDER mode, user can use the only command 'parse (folder)'.
 
 There will be automatically created folders for images, audio files, videos, documents and archives
 into the specified folder. Files of corresponding types will be moved into these folders.
