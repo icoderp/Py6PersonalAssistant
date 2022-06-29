@@ -1,4 +1,4 @@
-## Welcome to the project 'Personal Assistant'! This is console bot made by the 'CodeLines' team.
+## Welcome to the project 'Personal Assistant'! This is console bot made by the 'CodeLion' team.
 
 This bot works in three modes:
 
