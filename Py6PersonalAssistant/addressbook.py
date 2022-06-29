@@ -8,7 +8,6 @@ from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
@@ -127,10 +126,11 @@ class Record:
         self.address = address
 
     def __str__(self) -> str:
-        return f'User {self.name} - Phones: {", ".join([phone.value for phone in self.phone_list])}' \
-               f' - Email: {self.email}' \
-               f' - Birthday: {self.birthday}' \
-               f' - Address: {self.address}'
+        return f'\n|{"-" * 90}|\n' \
+               f'| User {self.name!s:<42} Birthday: {self.birthday!s:<15} \n' \
+               f'| Email: {self.email!s:<40} Phones: {", ".join([phone.value for phone in self.phone_list])!s:<40} \n' \
+               f'| Address: {self.address!s:<60} '\
+               f'\n|{"-" * 90}|\n'
 
     def add_phone(self, phone: Phone) -> None:
         self.phone_list.append(phone)
@@ -139,13 +139,13 @@ class Record:
         self.phone_list.remove(phone)
 
     def del_email(self, email: Email) -> None:
-        self.email = None
+        self.email = '-'
 
     def del_birthday(self, birthday: Birthday) -> None:
-        self.birthday = None
+        self.birthday = '-'
 
     def del_address(self, address: Address) -> None:
-        self.address = None
+        self.address = '-'
 
     def edit_phone(self, phone_num: Phone, new_phone_num: Phone):
         self.phone_list.remove(phone_num)
@@ -170,15 +170,15 @@ class AddressBook(UserDict):
         self.data[record.name.value] = record
 
     def iterator(self, func=None, days=0):
-        index, print_block = 1, '-' * 50 + '\n'
+        index, print_block = 1, ''
         for record in self.data.values():
             if func is None or func(record):
-                print_block += str(record) + '\n'
+                print_block += str(record)
                 if index < N:
                     index += 1
                 else:
                     yield print_block
-                    index, print_block = 1, '-' * 50 + '\n'
+                    index, print_block = 1, ''
         yield print_block
 
 
@@ -217,9 +217,9 @@ def add(contacts, *args):
         return f'Add phone {phone} to user {name}'
     else:
         phone = Phone(args[1])
-        birthday = None
-        email = None
-        address = None
+        birthday = '-'
+        email = '-'
+        address = '-'
         if len(args) > 2:
             birthday = Birthday(args[2])
         if len(args) > 3:
@@ -417,11 +417,14 @@ def writing_file(contacts):
 @InputError
 def find(contacts, *args):
     def find_sub(record):
-        return subst.lower() in record.name.value.lower() or \
-               any(subst in phone.value for phone in record.phone_list) or \
-               (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
-               (record.email.value is not None and subst in record.email.value) or \
-               (record.address.value is not None and subst in record.address.value)
+        try:
+            return subst.lower() in record.name.value.lower() or \
+                   any(subst in phone.value for phone in record.phone_list) or \
+                   (record.birthday.value is not None and subst in record.birthday.value.strftime('%d.%m.%Y')) or \
+                   (record.email.value is not None and subst in record.email.value) or \
+                   (record.address.value is not None and subst in record.address.value)
+        except AttributeError:
+            return False
 
     subst = args[0]
     res = f'List of users with \'{subst.lower()}\' in data:\n'

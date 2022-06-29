@@ -5,12 +5,11 @@ from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.lexers import PygmentsLexer
 from prompt_toolkit.styles import Style
 
 SqlCompleter = WordCompleter([
-    'add note ', 'search note', 'find note', 'show all', 'change note',
-    'del note', 'tag note', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
+    'add ', 'search ', 'find ', 'show all', 'change ',
+    'del ', 'tag ', 'good bye', 'close', 'exit', '.', 'help', '?'], ignore_case=True)
 
 style = Style.from_dict({
     'completion-menu.completion': 'bg:#008888 #ffffff',
@@ -18,6 +17,9 @@ style = Style.from_dict({
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
+
+
+to_check = 'show all'
 
 
 def start_note():  # перевірка чи файл "note.txt" створений
@@ -68,20 +70,25 @@ def find_note(*args):
         keyword = ''
         start = ''
         end = ''
-        print("Keyword not specified. The search will be performed by dates.")
+        if to_check == 'show all':
+            print('All notes')
+        else:
+            print("Keyword not specified. The search will be performed by dates.")
 
     # перевірка на коректність start date
     try:
         start_date = datetime.strptime(start, "%d.%m.%Y")
     except:
-        print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: 01.01.1970")
+        if to_check != 'show all':
+            print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: 01.01.1970")
         start_date = datetime.strptime("01.01.1970", "%d.%m.%Y")
 
     # перевірка на коректність end date
     try:
         end_date = datetime.strptime(end, "%d.%m.%Y")
     except:
-        print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
+        if to_check != 'show all':
+            print("Search start date is not specified in the correct format DD.MM.YYYY. Automatic date: today")
         end_date = datetime.now()
 
     with open(f"{Path().cwd()}/note.txt", "r+", encoding='utf-8') as file:
@@ -95,7 +102,7 @@ def find_note(*args):
         date = n[:10]  # вирізаємо дату створення нотатки
         date_time = datetime.strptime(date, "%d.%m.%Y")
 
-        if date_time >= start_date and date_time <= end_date:
+        if (date_time >= start_date) and (date_time <= end_date):
             # перевірка на keyword
             if (type(keyword) == str) and (keyword != ''):
                 if keyword in n.lower():
@@ -260,17 +267,17 @@ def helping(*args):
     return """
         Command format:
         help or ? -> this help;
-        add note -> add a note 
-            | Ex. add note The weather is good today
-        search note or find note -> Search by keyword in notes 
-            | Ex. find note today 
-            | Ex. find note today 01.01.2022 07.01.2022 
-        change note -> Changes the note 
-            | Ex. change note 01.01.2022 Happy New Year
-        tag note -> adds a tag to a note
-            | Ex. tag note 01.01.2022 - 00:11:34 #happy
-        del note -> deletes the note
-            | Ex. del note 01.01.2022 - 00:11:34
+        add -> add a note 
+            | Ex. add The weather is good today
+        search or find -> Search by keyword in notes 
+            | Ex. find today 
+            | Ex. find today 01.01.2022 07.01.2022 
+        change -> Changes the note 
+            | Ex. change 01.01.2022 Happy New Year
+        tag -> adds a tag to a note
+            | Ex. tag 01.01.2022 - 00:11:34 #happy
+        del -> deletes the note
+            | Ex. del 01.01.2022 - 00:11:34
         show all -> show all notes
         goodbye or close or exit or . -> exit the notes
         """
@@ -284,8 +291,8 @@ def exiting(*args):
     return 'Good bye!'
 
 
-COMMANDS = {add_note: ['add note '], find_note: ['search note', 'find note', 'show all'],
-            change_note: ['change note'], delete_note: ['del note'], tag_note: ['tag note'],
+COMMANDS = {add_note: ['add '], find_note: ['search ', 'find ', 'show all'],
+            change_note: ['change '], delete_note: ['del '], tag_note: ['tag '],
             exiting: ['good bye', 'close', 'exit', '.'], helping: ['help', '?']}
 
 
