@@ -14,7 +14,7 @@ SqlCompleter = WordCompleter([
     'hello', 'add ', 'info', 'delete user', 'change phone ', 'show phone', 'delete phone',
     'show all', 'good bye', 'close', 'exit', '.', 'show birthday', 'update birthday',
     'delete birthday', 'birthdays in ', 'show email', 'update email', 'delete email',
-    'help', '?', 'search'], ignore_case=True)
+    'help', '?', 'search', 'update address', 'delete address'], ignore_case=True)
 
 style = Style.from_dict({
     'completion-menu.completion': 'bg:#008888 #ffffff',
