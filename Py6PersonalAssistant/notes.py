@@ -311,7 +311,7 @@ def setup_notes():
     start_note()
     while True:
         user_command = prompt('Enter the command >>> ',
-                              history=FileHistory('history'),
+                              history=FileHistory('notes_history'),
                               auto_suggest=AutoSuggestFromHistory(),
                               completer=SqlCompleter,
                               style=style

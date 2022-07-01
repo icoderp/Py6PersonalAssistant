@@ -3,6 +3,7 @@ from Py6PersonalAssistant.clean_folder_tools.normalize import normalize
 from pathlib import Path
 import shutil
 
+# --------------------------------Prompt Toolkit-------------------------------
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -17,6 +18,7 @@ style = Style.from_dict({
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
+# --------------------------------Prompt Toolkit-------------------------------
 
 
 def handle_media(filename: Path, target_folder: Path):
@@ -151,7 +153,7 @@ def setup_cf():
     print("You are in the clean_folder now. Print 'help' or '?' to get some info about available commands")
     while True:
         user_command = prompt('Enter the command >>> ',
-                              history=FileHistory('history'),
+                              history=FileHistory('sortfile_history'),
                               auto_suggest=AutoSuggestFromHistory(),
                               completer=SqlCompleter,
                               style=style

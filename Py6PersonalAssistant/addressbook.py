@@ -1,9 +1,11 @@
 from collections import UserDict
 from datetime import date
+from pathlib import Path
 import datetime
 import pickle
 import re
 
+# --------------------------------Prompt Toolkit-------------------------------
 from prompt_toolkit import prompt
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
@@ -17,13 +19,14 @@ SqlCompleter = WordCompleter([
     'help', '?', 'search', 'update address', 'delete address'], ignore_case=True)
 
 style = Style.from_dict({
-    'completion-menu.completion': 'bg:#008888 #ffffff',
+    'completion-menu.completion': 'bg:#884444',
     'completion-menu.completion.current': 'bg:#00aaaa #000000',
     'scrollbar.background': 'bg:#88aaaa',
     'scrollbar.button': 'bg:#222222',
 })
+# --------------------------------Prompt Toolkit-------------------------------
 
-N = 2
+N = 2 # кількість записів для представлення телефонної книги
 
 
 class Field:
@@ -434,6 +437,19 @@ def find(contacts, *args):
     return res
 
 
+def start_file():  # перевірка чи файл 'AddressBook.bin' створений
+
+    global file
+    try:
+        file = open(f"{Path().cwd()}/{file_name}", 'rb')
+        print(f"File {file_name} is loaded.")
+    except:
+        file = open(f"{Path().cwd()}/{file_name}", 'wb')
+        print(f"File {file_name} is created.")
+    finally:
+        file.close()
+
+
 COMMANDS = {hello: ['hello'], add: ['add '], info: ['info'], del_user: ['delete user'], change: ['change phone '],
             phone: ['show phone'], del_phone: ['delete phone'], show_all: ['show all'],
             exiting: ['good bye', 'close', 'exit', '.'], birthday: ['show birthday'],
@@ -454,11 +470,12 @@ def command_parser(user_command: str) -> (str, list):
 
 
 def setup_abook():
+    start_file()
     contacts = reading_file(file_name)
     print("You are in the addressbook now. Print 'help' or '?' to get some info about available commands")
     while True:
         user_command = prompt('Enter the command >>> ',
-                              history=FileHistory('history'),
+                              history=FileHistory('addressbook_history'),
                               auto_suggest=AutoSuggestFromHistory(),
                               completer=SqlCompleter,
                               style=style
